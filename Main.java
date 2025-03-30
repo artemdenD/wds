@@ -1,33 +1,46 @@
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class Main extends Application {
-    private int count = 0;
+    public static void main(String[] args) {
+        launch(args);
+    }
 
     @Override
     public void start(Stage primaryStage) {
-        Text counterText = new Text("Count: " + count);
-        Button clickButton = new Button("Click me");
+        primaryStage.setTitle("Todo List");
 
-        clickButton.setOnAction(e -> {
-            count++;
-            counterText.setText("Count: " + count);
+        ObservableList<String> tasks = FXCollections.observableArrayList();
+        ListView<String> listView = new ListView<>(tasks);
+
+        TextField taskInput = new TextField();
+        taskInput.setPromptText("Add a new task");
+
+        Button addButton = new Button("Add");
+        addButton.setOnAction(e -> {
+            String task = taskInput.getText().trim();
+            if (!task.isEmpty()) {
+                tasks.add(task);
+                taskInput.clear();
+            }
         });
 
-        VBox layout = new VBox(10, counterText, clickButton);
-        layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
+        Button removeButton = new Button("Remove");
+        removeButton.setOnAction(e -> {
+            String selectedTask = listView.getSelectionModel().getSelectedItem();
+            tasks.remove(selectedTask);
+        });
 
-        Scene scene = new Scene(layout, 300, 200);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Click Counter");
+        HBox inputBox = new HBox(10, taskInput, addButton, removeButton);
+        VBox layout = new VBox(10, listView, inputBox);
+        layout.setStyle("-fx-padding: 10;");
+
+        primaryStage.setScene(new Scene(layout, 300, 400));
         primaryStage.show();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }
